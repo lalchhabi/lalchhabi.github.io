@@ -30,7 +30,7 @@ features = pd.read_csv(os.path.join(data_path, 'features.csv'))
 
 ```
 ### Data Preprocessing
-###### Preprocessing start with merging store and features data on the basis of column 'Store'
+#### Preprocessing start with merging store and features data on the basis of column 'Store'
 ```markdown
 print('Columns of train dataset',train.columns)
 print('Columns of test dataset', test.columns)
@@ -47,7 +47,7 @@ missing_percentage = feat_stores.isnull().sum() * 100 / len(feat_stores)
 missing_value_df = pd.DataFrame({'percent_missing': missing_percentage})
 missing_value_df
 ```
-
+Here MarkDown1, MarkDown2, MarkDown3, MarkDown4, MarkDown5 columns have more than 50% null values so we remove it and use those columns which have less than 50% null values i.e CPI and Unemployment. Here we fill or impute missing values by using Simple Imputer() method with takes following arguments i.e missing_values, strategy and fill_value. Here we use mean as a strategy.
 
 
 
