@@ -30,24 +30,38 @@ features = pd.read_csv(os.path.join(data_path, 'features.csv'))
 
 ```
 ### Data Preprocessing
-#### Preprocessing start with merging store and features data on the basis of column 'Store'
+#### Handling Missing Values
+At first we checked each data whether it has missing values or not.
 ```markdown
-print('Columns of train dataset',train.columns)
-print('Columns of test dataset', test.columns)
-print('Columns of stores dataset', stores.columns)
-print('Columns of sampleSubmission dataset', sampleSubmission.columns)
-print('Columns of features dataset', features.columns)
-feat_stores = pd.merge(stores, features, on = 'Store')
-feat_stores
+print('Train')
+print(train.isnull().sum())
+print('Test')
+print(test.isnull().sum())
+print('Stores')
+print(stores.isnull().sum())
+print('SampleSubmission')
+print(sampleSubmission.isnull().sum())
+print('Features')
+print(features.isnull().sum())                      
 ```
-### Handling Missing values of feat_stores data
+Here we have null values in Features dataset's columns i.e MarkDown1, MarkDown2, MarkDown3, MarkDown4, MarkDown5, CPI and Unemployment. So now we have to check percentage of the missing values for each column.
 ```markdown
-feat_stores.isnull().sum()
-missing_percentage = feat_stores.isnull().sum() * 100 / len(feat_stores)
+missing_percentage = features.isnull().sum() * 100 / len(features)
 missing_value_df = pd.DataFrame({'percent_missing': missing_percentage})
 missing_value_df
+### Removing columns containing maximum null values
+features.drop(['MarkDown1','MarkDown2','MarkDown3', 'MarkDown4', 'MarkDown5'], axis = 1, inplace =True)
+
+from sklearn.impute import SimpleImputer
+cpi_impute = SimpleImputer(missing_values = np.nan, strategy = 'mean')
+cpi_impute = imputer.fit(features[['CPI']])
+features['CPI'] = cpi_impute.transform(features[['CPI']]).ravel()
+
+from sklearn.impute import SimpleImputer
+unemployment_impute = SimpleImputer(missing_values= np.nan, strategy = 'mean')
+unemployment_impute = unemployment_impute.fit(features[['Unemployment']])
+features['Unemployment'] = unemployment_impute.transform(feat_stores[['Unemployment']]).ravel()
 ```
-Here MarkDown1, MarkDown2, MarkDown3, MarkDown4, MarkDown5 columns have more than 50% null values so we remove it and use those columns which have less than 50% null values i.e CPI and Unemployment. Here we fill or impute missing values by using Simple Imputer() method with takes following arguments i.e missing_values, strategy and fill_value. Here we use mean as a strategy.
 
 
 
