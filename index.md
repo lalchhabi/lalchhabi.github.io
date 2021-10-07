@@ -80,6 +80,67 @@ train['Date'] = pd.to_datetime(train['Date'])
 test['Date'] = pd.to_datetime(test['Date'])
 ```
 
+The 'Date' field doesn't represent the day itself, but each week, ending every friday. So, it's interesting two create a 'Week' field and also we can create one for 'Year'. 
+```markdown
+feat_store['Week'] = feat_store.Date.dt.week
+feat_store['Year'] = feat_store.Date.dt.year
+```
+Merging the train and feat_store dataframe
+```markdown
+train_detail = train.merge(feat_store, on = ['Store','Date','IsHoliday']).sort_values(by = ['Store','Date','IsHoliday']).reset_index(drop=True)
+train_detail
+test_detail = test.merge(feat_store, on = ['Store', 'Date','IsHoliday']).sort_values(by = ['Store','Date','IsHoliday']).reset_index(drop = True)
+test_detail
+```
+Let's take a look at the Average Weekly Sales per Year and find out if there are another holiday peak sales that were not considered by 'IsHoliday' field.
+```markdown
+weekly_sales_2010 = train_detail[train_detail.Year==2010]['Weekly_Sales'].groupby(train_detail['Week']).mean()
+weekly_sales_2011 = train_detail[train_detail.Year==2011]['Weekly_Sales'].groupby(train_detail['Week']).mean()
+weekly_sales_2012 = train_detail[train_detail.Year == 2012]['Weekly_Sales'].groupby(train_detail['Week']).mean()
+fig = go.Figure()
+fig.add_trace(go.Scatter(x = weekly_sales_2010.index, y = weekly_sales_2010.values, mode = 'lines', name = '2010_Weekly_Sales', line = dict(color = 'blue', width = 1.5)))
+fig.add_trace(go.Scatter(x = weekly_sales_2011.index, y = weekly_sales_2011.values, mode = 'lines', name = '2011_Weekly_Sales', line = dict(color = 'green', width = 1.5)))
+fig.add_trace(go.Scatter(x = weekly_sales_2012.index, y = weekly_sales_2012.values, mode = 'lines', name = '2012_Weekly_Sales', line = dict(color = 'maroon', width = 1.5)))
+fig.update_layout(title = 'Average Weekly Sales Per Year')
+fig.update_layout(xaxis = dict(tickmode = 'linear', tick0 = 1, dtick = 1))
+fig.update_yaxes(title_text="Sales")
+fig.update_xaxes(title_text = 'Week')
+fig.show()
+```
+> As we can see, there is one important Holiday not included in 'IsHoliday'. It's the Easter Day. It is always in a Sunday, but can fall on different weeks. 
+    >* In 2010 is in Week 13
+    >* In 2011, Week 16
+    >* Week 14 in 2012
+    >* and, finally, Week 13 in 2013 for Test set
+
+> So, we can change to 'True' these Weeks in each Year.
+train_detail.loc[(train_detail.Year == 2010) & (train_detail.Week == 13), 'IsHoliday'] = True
+train_detail.loc[(train_detail.Year == 2011) & (train_detail.Week == 16), 'IsHoliday'] = True
+train_detail.loc[(train_detail.Year == 2012) & (train_detail.Week == 14), "IsHoliday"] = True
+test_detail.loc[(test_detail.Year == 2013) & (test_detail.Week == 13), 'IsHoliday'] = True
+
+Now let's look the Averge weekly sales of each Store and identify the store having highest and lowest average weekly sales.
+```markdown
+
+weekly_sales = train_detail['Weekly_Sales'].groupby(train_detail['Store']).mean()
+fig = px.bar(x = weekly_sales.index, y = weekly_sales.values, title = 'Averge Weekly Sales per store', color = weekly_sales.values)
+fig.update_layout(title = 'Average Weekly Sales of Each Store')
+fig.update_yaxes(title_text="Sales")
+fig.update_xaxes(title_text = 'Store')
+fig.show()
+```
+From above bar chart, we can identify the store having highest average weekly sales is store no. 20 with sales 29,508 and the store having lowest average weekly sales is store no. 5 with sales 5,053.
+
+
+
+
+
+
+
+
+
+
+
 
 
 
