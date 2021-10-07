@@ -114,11 +114,13 @@ fig.show()
     >* and, finally, Week 13 in 2013 for Test set
 
 > So, we can change to 'True' these Weeks in each Year.
+```markdown
+
 train_detail.loc[(train_detail.Year == 2010) & (train_detail.Week == 13), 'IsHoliday'] = True
 train_detail.loc[(train_detail.Year == 2011) & (train_detail.Week == 16), 'IsHoliday'] = True
 train_detail.loc[(train_detail.Year == 2012) & (train_detail.Week == 14), "IsHoliday"] = True
 test_detail.loc[(test_detail.Year == 2013) & (test_detail.Week == 13), 'IsHoliday'] = True
-
+```
 Now let's look the Averge weekly sales of each Store and identify the store having highest and lowest average weekly sales.
 ```markdown
 
