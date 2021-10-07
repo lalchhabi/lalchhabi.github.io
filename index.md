@@ -49,9 +49,11 @@ Here we have null values in Features dataset's columns i.e MarkDown1, MarkDown2,
 missing_percentage = features.isnull().sum() * 100 / len(features)
 missing_value_df = pd.DataFrame({'percent_missing': missing_percentage})
 missing_value_df
-### Removing columns containing maximum null values
-features.drop(['MarkDown1','MarkDown2','MarkDown3', 'MarkDown4', 'MarkDown5'], axis = 1, inplace =True)
+```
+Here MarkDown1, MarkDown2, MarkDown3, MarkDown4, MarkDown5 columns have more than 50% null values so we remove it and use those columns which have less than 50% null values i.e CPI and Unemployment. Here we fill or impute missing values by using Simple Imputer() method *which* takes following arguments i.e missing_values, strategy and fill_value. Here we use mean as a strategy.
 
+```markdown
+features.drop(['MarkDown1','MarkDown2','MarkDown3', 'MarkDown4', 'MarkDown5'], axis = 1, inplace =True)
 from sklearn.impute import SimpleImputer
 cpi_impute = SimpleImputer(missing_values = np.nan, strategy = 'mean')
 cpi_impute = imputer.fit(features[['CPI']])
@@ -62,6 +64,28 @@ unemployment_impute = SimpleImputer(missing_values= np.nan, strategy = 'mean')
 unemployment_impute = unemployment_impute.fit(features[['Unemployment']])
 features['Unemployment'] = unemployment_impute.transform(feat_stores[['Unemployment']]).ravel()
 ```
+Merging data                                                                     
+Here we have merge two dataframes i.e stores and features on the basis of Store column
+
+```markdown
+feat_store = pd.merge(features,stores, on = 'Store', how = 'inner')
+feat_store
+```
+In Data Analysis the date field must have datatime type so here we can see Date field has string type so we should convert them to  datetime type of all dataframes.
+```markdown
+feat_store.dtypes
+pd.DataFrame({'Train_Type':train.dtypes, 'Test_Type':test.dtypes})
+feat_store['Date'] = pd.to_datetime(feat_store['Date'])
+train['Date'] = pd.to_datetime(train['Date'])
+test['Date'] = pd.to_datetime(test['Date'])
+```
+
+
+
+
+
+
+
 
 
 
